@@ -27,7 +27,7 @@ public class CurrencyRateService {
 
     private final Logger log = getLogger(getClass());
 
-    private static final String topic = "currency-rate";
+    private static final String topic = "sportsbook.dev.rate-demo";
 
     protected KafkaFactory kafkaFactory;
 
@@ -35,7 +35,7 @@ public class CurrencyRateService {
 
     @PostConstruct
     public void init() {
-        sender = kafkaFactory.sender("currency-rate");
+        sender = kafkaFactory.sender(topic);
 
         var receiverFlux = kafkaFactory
                 .receiver(topic)

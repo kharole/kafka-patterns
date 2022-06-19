@@ -18,13 +18,13 @@ import java.util.Map;
 @Service
 public class KafkaFactory {
 
-    @Value("${patterns.kafka.bootstrap-servers}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaServers;
 
     public KafkaReceiver<String, String> receiver(String topic) {
         Map<String, Object> receiverOptions = Map.of(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServers,
-                ConsumerConfig.GROUP_ID_CONFIG, "patterns",
+                ConsumerConfig.GROUP_ID_CONFIG, "sportsbook.dev.patterns",
                 ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false,
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest",
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,

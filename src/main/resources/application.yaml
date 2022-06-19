@@ -1,3 +1,3 @@
-patterns:
+spring:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: tbp-mthu-kafka01.ipa.tainbp.net:9092
