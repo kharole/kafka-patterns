@@ -6,7 +6,9 @@ import org.pcollections.HashTreePMap;
 import org.pcollections.PMap;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.kafka.receiver.ReceiverRecord;
@@ -19,6 +21,8 @@ import java.time.Duration;
 import java.util.Map;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.stream.Collectors.toMap;
+import static org.pcollections.HashTreePMap.from;
 import static org.slf4j.LoggerFactory.getLogger;
 import static reactor.core.publisher.Flux.fromStream;
 
@@ -33,8 +37,12 @@ public class CurrencyRateService {
 
     protected KafkaSender<String, String> sender;
 
+    private WebClient client;
+
     @PostConstruct
     public void init() {
+        client = WebClient.builder().build();
+
         sender = kafkaFactory.sender(topic);
 
         var receiverFlux = kafkaFactory
@@ -60,7 +68,16 @@ public class CurrencyRateService {
     }
 
     private Mono<PMap<String, BigDecimal>> getCurrenciesMapMono() {
-        return null;
+        ParameterizedTypeReference<RatesData> typeRef = new ParameterizedTypeReference<>() {
+        };
+        return client.get()
+                .uri("https://api.coinlore.net/api/tickers/")
+                .retrieve()
+                .bodyToMono(typeRef)
+                .doFirst(() -> log.info("mono connected"))
+                .doOnError(ex -> log.error("mono error {}", ex.getMessage()))
+                .doOnTerminate(() -> log.info("mono disconnected"))
+                .map(ratesData -> from(ratesData.getData().stream().collect(toMap(r -> r.getSymbol(), r -> r.getPrice_usd()))));
     }
 
     private SenderRecord<String, String, Object> asRecord(Map.Entry<String, BigDecimal> entry) {
