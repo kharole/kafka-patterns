@@ -51,12 +51,14 @@ public class CurrencyRateService {
                 .map(this::left)
                 .doOnNext(t -> log.info("currency-rate: received: {}", t.left().get()));
 
-        var currenciesFlux = getCurrencyRateReloadIntervalFlux()
+        var currenciesFlux =
+                Flux.interval(Duration.of(30, SECONDS))
                 .concatMap(tick -> getCurrenciesMapMono())
                 .doOnNext(ms -> log.info("currency-rate: background update: size={}", ms.size()))
                 .map(this::right);
 
-        var recordsToSendFlux = Flux.merge(receiverFlux, currenciesFlux)
+        var recordsToSendFlux =
+                Flux.merge(receiverFlux, currenciesFlux)
                 .scan(CurrencyState.EMPTY, CurrencyState::apply)
                 .skip(1)
                 .map(CurrencyState::diff)
@@ -92,10 +94,6 @@ public class CurrencyRateService {
 
     private Either<PMap<String, BigDecimal>, PMap<String, BigDecimal>> right(PMap<String, BigDecimal> m) {
         return Either.right(m);
-    }
-
-    protected Flux<Long> getCurrencyRateReloadIntervalFlux() {
-        return Flux.interval(Duration.of(30, SECONDS));
     }
 
     @Autowired

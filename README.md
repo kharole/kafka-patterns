@@ -18,17 +18,46 @@ with prices since currency on each rate change). So you may need to apply some k
 original topic.
 
 One may say it is a trivial problem. A service with Kafka listener, HashMap along with some code that compares 
-snapshot to the map and only send the difference would solve it. We are on the right way! But what is the map is pretty
-big, and you don't want every key get re-emitted on service restart. It would happen inevitably since on first 
-comparison the in-mem map is empty hence the first diff is as big as whole snapshot. If it is not a big deal for 
-your app just ditch this article. Those who stay we are almost there. 
+snapshot to the content map and only send the difference would solve it. We are on the right way! But what is the
+map is pretty big, and you don't want every key get re-emitted on service restart. It would happen inevitably since 
+on first comparison the in-mem map is empty hence the first diff is as big as whole snapshot. If it is not a big
+deal for your app just ditch this article. Those who stay we are almost there. 
 
 Obviously you have to store latest known snapshot somewhere to load it on start up. Bingo, Hibernate time! Hell no!
 If you think of it for a minute the right answer will pop up. Our compacted topic is the latest known snapshot. At first
 glance, it may look a bit messy to both read and write to the same topic, but hopefully once visualized it gets
 more clear. Well known "impedance mismatch" problem was borrowed from electronics. Shall we look for a solution in the
-same realm maybe? This particular designed inspired by [voltage follower](http://www.learningaboutelectronics.com/Articles/Voltage-follower) circuit and using negative feedback loops in
-general.
+same realm maybe? This particular designed inspired by
+[voltage follower](http://www.learningaboutelectronics.com/Articles/Voltage-follower) circuit and using negative 
+feedback loops in general.
 
 ![telegram-cloud-photo-size-2-5314377457744329937-y](https://user-images.githubusercontent.com/2360882/175809107-af5bef5c-7542-43fe-9ac5-9273922c52de.jpg)
 
+If you have at least some basing experience with electronics (yes, sticking plug into socket count) then thinking of 
+fluxes pumping data between topics, services and processing stages as wires connecting various electronic components
+makes things much more clear. So what components and wires and wire do we have on our circuit:
+- oscillator - interval flux
+```
+Flux.interval(Duration.of(30, SECONDS))
+```
+- source of signal - REST service
+```
+.concatMap(tick -> getCurrenciesMapMono())
+```
+- opamp - difference calculator
+```
+        var recordsToSendFlux = 
+                Flux.merge(receiverFlux, currenciesFlux)
+                .scan(CurrencyState.EMPTY, CurrencyState::apply)
+                .skip(1)
+                .map(CurrencyState::diff)
+                .concatMap(diff -> fromStream(diff.entrySet().stream()))
+                .map(this::asRecord);
+```
+- feedback loop - Kafka topic
+```
+        sender.send(recordsToSendFlux)
+                .subscribe(result -> log.info("currency-rate: sent: {}", result.correlationMetadata()));
+
+```
+- bunch of probes - p1, p2, p3 attached to an oscilloscope
