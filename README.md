@@ -33,7 +33,7 @@ feedback loops](https://en.wikipedia.org/wiki/Negative_feedback) in general.
 
 ![telegram-cloud-photo-size-2-5314377457744329937-y](https://user-images.githubusercontent.com/2360882/175809107-af5bef5c-7542-43fe-9ac5-9273922c52de.jpg)
 
-If you have at least some basing experience with electronics (yes, sticking plug into socket count) then thinking of 
+If you have at least some basing experience with electronics (yes, putting plug into socket counts) then thinking of 
 fluxes pumping data between topics, services and processing stages as wires connecting various electronic components
 makes things much more clear. So what components and wires and wire do we have on our circuit:
 - oscillator - interval flux
