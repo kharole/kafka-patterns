@@ -14,14 +14,14 @@ to topic and let compaction strategy do the rest - remove duplicate keys and onl
 Can be it is not enough. If you 
 combine a dozen of different topics you may end up with the result that emitting values blindly at 
 luridicous rate even though nothing have changed really (let say you have to rebuild whole goods catalogue 
-with prices since currency on each rate change). So you may need to apply some kind of change detections to 
+with prices on each currency rate change). So you may need to apply some kind of change detections to 
 original topic.
 
 One may say it is a trivial problem. A service with Kafka listener, HashMap along with some code that compares 
-snapshot to the content map and only send the difference would solve it. We are on the right way! But what is the
+snapshot to the content map and only send the difference would solve it. We are on the right way! But what if the
 map is pretty big, and you don't want every key get re-emitted on service restart. It would happen inevitably since 
 on first comparison the in-mem map is empty hence the first diff is as big as whole snapshot. If it is not a big
-deal for your app just ditch this article. Those who stay we are almost there. 
+deal for your app just ditch this article. Those who abide, we are almost there.
 
 Obviously you have to store latest known snapshot somewhere to load it on start up. Bingo, Hibernate time! Hell no!
 If you think of it for a minute the right answer will pop up. Our compacted topic is the latest known snapshot. At first
