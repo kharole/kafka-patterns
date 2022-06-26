@@ -28,8 +28,8 @@ If you think of it for a minute the right answer will pop up. Our compacted topi
 glance, it may look a bit messy to both read and write to the same topic, but hopefully once visualized it gets
 more clear. Well known "impedance mismatch" problem was borrowed from electronics. Shall we look for a solution in the
 same realm maybe? This particular designed inspired by
-[voltage follower](http://www.learningaboutelectronics.com/Articles/Voltage-follower) circuit and using negative 
-feedback loops in general.
+[voltage follower](http://www.learningaboutelectronics.com/Articles/Voltage-follower) circuit and using [negative 
+feedback loops](https://en.wikipedia.org/wiki/Negative_feedback) in general.
 
 ![telegram-cloud-photo-size-2-5314377457744329937-y](https://user-images.githubusercontent.com/2360882/175809107-af5bef5c-7542-43fe-9ac5-9273922c52de.jpg)
 
@@ -60,4 +60,6 @@ Flux.interval(Duration.of(30, SECONDS))
                 .subscribe(result -> log.info("currency-rate: sent: {}", result.correlationMetadata()));
 
 ```
-- bunch of probes - p1, p2, p3 attached to an oscilloscope
+- bunch of probes - p1, p2, p3 attached to an oscilloscope - debugger
+
+Now you can proceed with the most pleasureful part - attach the batter and let it run. Be careful and observe polarity.  
