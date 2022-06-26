@@ -27,5 +27,8 @@ Obviously you have to store latest known snapshot somewhere to load it on start 
 If you think of it for a minute the right answer will pop up. Our compacted topic is the latest known snapshot. At first
 glance, it may look a bit messy to both read and write to the same topic, but hopefully once visualized it gets
 more clear. Well known "impedance mismatch" problem was borrowed from electronics. Shall we look for a solution in the
-same realm maybe? This particular designed inspired by voltage follower circuit and using negative feedback loops in
+same realm maybe? This particular designed inspired by [voltage follower](http://www.learningaboutelectronics.com/Articles/Voltage-follower) circuit and using negative feedback loops in
 general.
+
+![telegram-cloud-photo-size-2-5314377457744329937-y](https://user-images.githubusercontent.com/2360882/175809107-af5bef5c-7542-43fe-9ac5-9273922c52de.jpg)
+
