@@ -62,4 +62,4 @@ Flux.interval(Duration.of(30, SECONDS))
 ```
 - bunch of probes - p1, p2, p3 attached to an oscilloscope - debugger
 
-Now you can proceed with the most pleasureful part - attach the batter and let it run. But be careful and observe polarity.  
+Now you can proceed with the most pleasureful part - attach the battery and let it run. But be careful and observe polarity.  
